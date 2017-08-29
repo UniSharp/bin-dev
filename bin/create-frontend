@@ -1,0 +1,55 @@
+#!/bin/bash
+
+if [ $UID == "root" ]; then
+    echo "ERROR: Superuser is now allowed." >&2
+    exit 1
+fi
+
+if [ -z $1 ]; then
+    echo "ERROR: Missing project name" >&2
+    exit 1
+fi
+
+
+if [ -e $1 ]; then
+    echo "ERROR: $1 already exists" >&2
+    exit 1
+fi
+
+PRJ=$1
+
+vue init nuxt/starter $PRJ
+cd $PRJ
+yarn
+yarn add \
+     vue-style-loader \
+     sass-loader \
+     node-sass \
+     bootstrap@4.0.0-beta \
+     debug
+
+mkdir -p assets/scss
+cp node_modules/bootstrap/scss/_functions.scss assets/scss/functions.scss
+sed 's/ !default//g' node_modules/bootstrap/scss/_variables.scss > assets/scss/variables.scss
+
+cat > layouts/default.vue <<EOF
+<template>
+  <div>
+    <nuxt/>
+  </div>
+</template>
+
+<style lang="scss">
+  @import "../assets/scss/functions";
+  @import "../assets/scss/variables";
+  @import "../node_modules/bootstrap/scss/bootstrap";
+</style>
+EOF
+
+cd -
+
+
+echo "--------------------------"
+echo " $PRJ created."
+echo "--------------------------"
+exit 0
