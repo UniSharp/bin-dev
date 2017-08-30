@@ -16,33 +16,186 @@ if [ -e $1 ]; then
     exit 1
 fi
 
+if [ ! `which yarn` ]; then
+    echo "ERROR: yarn command not found" >&2
+    exit 1
+fi
+
 PRJ=$1
 
 vue init nuxt/starter $PRJ
 cd $PRJ
 yarn
 yarn add \
-     vue-style-loader \
      sass-loader \
      node-sass \
      bootstrap@4.0.0-beta \
-     debug
+     debug \
+     axios \
+     pug \
+     @nuxtjs/font-awesome \
+     nuxt@1.0.0-rc6
+
+yarn add --dev \
+     stylelint \
+     stylelint-config-standard \
+     stylelint-processor-html \
+     stylelint-webpack-plugin
 
 mkdir -p assets/scss
+touch assets/scss/global.scss
+
 cp node_modules/bootstrap/scss/_functions.scss assets/scss/functions.scss
 sed 's/ !default//g' node_modules/bootstrap/scss/_variables.scss > assets/scss/variables.scss
 
+sed -i 's#.*#// &#' assets/scss/functions.scss
+sed -i 's#.*#// &#' assets/scss/variables.scss
+
+rm -f components/Logo.vue
+
 cat > layouts/default.vue <<EOF
-<template>
-  <div>
-    <nuxt/>
-  </div>
+<template lang="pug">
+  div
+    navbar
+    nuxt
 </template>
 
+<script>
+  import Navbar from '~/components/Navbar.vue'
+
+  export default {
+    components: {
+      Navbar
+    }
+  }
+</script>
+
 <style lang="scss">
-  @import "../assets/scss/functions";
-  @import "../assets/scss/variables";
-  @import "../node_modules/bootstrap/scss/bootstrap";
+  @import "assets/scss/functions";
+  @import "assets/scss/variables";
+  @import "node_modules/bootstrap/scss/bootstrap";
+</style>
+EOF
+
+
+cat > pages/index.vue <<EOF
+<template lang="pug">
+  .container
+    .row
+      .col-12
+        h1 Hello world!
+</template>
+
+<script>
+  export default {
+    components: {
+    }
+  }
+</script>
+
+<style lang="scss">
+</style>
+EOF
+
+cat > nuxt.config.js <<EOF
+const StylelintPlugin = require('stylelint-webpack-plugin')
+
+module.exports = {
+  /*
+  ** Headers of the page
+  */
+  head: {
+    title: '{{ name }}',
+    meta: [
+      { charset: 'utf-8' },
+      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+      { hid: 'description', name: 'description', content: '{{ description }}' }
+    ],
+    link: [
+      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
+    ]
+  },
+  /*
+  ** Customize the progress-bar color
+  */
+  loading: { color: '#3B8070' },
+  /*
+  ** Global css
+  */
+  css: [
+    { src: '~/assets/scss/global.scss', lang: 'scss' }
+  ],
+  /*
+  ** Build configuration
+  */
+  build: {
+    /*
+    ** Run ESLINT and STYLELINT on save
+    */
+    extend (config, ctx) {
+      if (ctx.dev && ctx.isClient) {
+        config.module.rules.push({
+          enforce: 'pre',
+          test: /\.(js|vue)\$/,
+          loader: 'eslint-loader',
+          exclude: /(node_modules)/
+        })
+
+        config.plugins.push(new StylelintPlugin({
+          files: ['**/*.scss', '**/*.vue'],
+          syntax: 'scss'
+        }))
+      }
+    }
+  },
+  modules: [
+    '@nuxtjs/font-awesome'
+  ]
+}
+EOF
+
+
+
+cat > .stylelintrc <<EOF
+{
+  "processors": ["stylelint-processor-html"],
+  "extends": "stylelint-config-standard",
+  "defaultSeverity": "error",
+  "rules": {
+    "selector-list-comma-newline-after": null,
+    "number-leading-zero": "never",
+    "selector-pseudo-element-colon-notation": "single",
+    "no-empty-source": null,
+    "at-rule-no-unknown": [true, {
+      "ignoreAtRules": ["include", "mixin", "each", "extend"]
+    }]
+  }
+}
+EOF
+
+
+cat > components/Navbar.vue <<EOF
+<template lang="pug">
+  nav.navbar.navbar-expand-lg.navbar-light.bg-light
+    a.navbar-brand(href='#') Navbar
+    button.navbar-toggler(type='button', data-toggle='collapse', data-target='#navbarSupportedContent', aria-controls='navbarSupportedContent', aria-expanded='false', aria-label='Toggle navigation')
+      span.navbar-toggler-icon
+    #navbarSupportedContent.collapse.navbar-collapse
+      ul.navbar-nav.mr-auto
+        li.nav-item.active
+          a.nav-link(href='#')
+            | Home
+            span.sr-only (current)
+        li.nav-item
+          a.nav-link(href='#') Link
+        li.nav-item
+          a.nav-link.disabled(href='#') Disabled
+      form.form-inline.my-2.my-lg-0
+        input.form-control.mr-sm-2(type='text', placeholder='Search', aria-label='Search')
+        button.btn.btn-outline-success.my-2.my-sm-0(type='submit') Search
+</template>
+
+<style>
 </style>
 EOF
 
