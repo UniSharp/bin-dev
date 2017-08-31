@@ -57,13 +57,11 @@ rm -f components/Logo.vue
 
 cat > layouts/default.vue <<EOF
 <template lang="pug">
-  div
-    navbar
-    .container-fluid
-      .row
-        sidebar
-        main.col-sm-9.ml-sm-auto.col-md-10.pt-3(role='main')
-          nuxt
+  .container-fluid.clearfix
+    sidebar.float-left
+    div
+      navbar
+      nuxt
 </template>
 
 <script>
@@ -88,10 +86,9 @@ EOF
 
 cat > pages/index.vue <<EOF
 <template lang="pug">
-  .container
-    .row
-      .col-12
-        h1 Hello world!
+  .row
+    .col-12
+      h1 Hello world!
 </template>
 
 <script>
@@ -101,7 +98,7 @@ cat > pages/index.vue <<EOF
   }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 </style>
 EOF
 
@@ -210,13 +207,14 @@ cat > components/Navbar.vue <<EOF
           b-dropdown-item(href='#') Signout
 </template>
 
-<style>
+<style lang="scss" scoped>
 </style>
 EOF
 
 cat > components/Sidebar.vue <<EOF
 <template lang="pug">
-  nav.col-sm-3.col-md-2.d-none.d-sm-block.bg-light.sidebar
+  nav.d-none.d-sm-block.bg-light.sidebar.pt-3
+    h3 Backend
     ul.nav.nav-pills.flex-column.my-3
       li.nav-item
         a.nav-link.active(href='#')
@@ -245,6 +243,12 @@ cat > components/Sidebar.vue <<EOF
       li.nav-item
         a.nav-link(href='#') Another nav item
 </template>
+
+<style lang="scss" scoped>
+  .sidebar {
+    width: 200px;
+  }
+</style>
 EOF
 
 cd -
