@@ -34,7 +34,9 @@ yarn add \
      axios \
      pug \
      @nuxtjs/font-awesome \
+     @nuxtjs/bootstrap-vue \
      nuxt@1.0.0-rc6
+
 
 yarn add --dev \
      stylelint \
@@ -57,15 +59,21 @@ cat > layouts/default.vue <<EOF
 <template lang="pug">
   div
     navbar
-    nuxt
+    .container-fluid
+      .row
+        sidebar
+        main.col-sm-9.ml-sm-auto.col-md-10.pt-3(role='main')
+          nuxt
 </template>
 
 <script>
   import Navbar from '~/components/Navbar.vue'
+  import Sidebar from '~/components/Sidebar.vue'
 
   export default {
     components: {
-      Navbar
+      Navbar,
+      Sidebar
     }
   }
 </script>
@@ -149,7 +157,8 @@ module.exports = {
     }
   },
   modules: [
-    '@nuxtjs/font-awesome'
+    '@nuxtjs/font-awesome',
+    ['@nuxtjs/bootstrap-vue', { css: false }]
   ]
 }
 EOF
@@ -176,27 +185,66 @@ EOF
 
 cat > components/Navbar.vue <<EOF
 <template lang="pug">
-  nav.navbar.navbar-expand-lg.navbar-light.bg-light
-    a.navbar-brand(href='#') Navbar
-    button.navbar-toggler(type='button', data-toggle='collapse', data-target='#navbarSupportedContent', aria-controls='navbarSupportedContent', aria-expanded='false', aria-label='Toggle navigation')
-      span.navbar-toggler-icon
-    #navbarSupportedContent.collapse.navbar-collapse
-      ul.navbar-nav.mr-auto
-        li.nav-item.active
-          a.nav-link(href='#')
-            | Home
-            span.sr-only (current)
-        li.nav-item
-          a.nav-link(href='#') Link
-        li.nav-item
-          a.nav-link.disabled(href='#') Disabled
-      form.form-inline.my-2.my-lg-0
-        input.form-control.mr-sm-2(type='text', placeholder='Search', aria-label='Search')
-        button.btn.btn-outline-success.my-2.my-sm-0(type='submit') Search
+  b-navbar(toggleable='md', variant='light')
+    b-nav-toggle(target='nav_collapse')
+    b-navbar-brand(href='#') NavBar
+    b-collapse#nav_collapse(is-nav='')
+      b-nav(is-nav-bar='')
+        b-nav-item(href='#') Link
+        b-nav-item(href='#', disabled='') Disabled
+      // Right aligned nav items
+      b-nav.ml-auto(is-nav-bar='')
+        b-nav-form
+          b-form-input.mr-sm-2(size='sm', type='text', placeholder='Search')
+            b-button.my-2.my-sm-0(size='sm', type='submit') Search
+        b-nav-item-dropdown(text='Lang', right='')
+          b-dropdown-item(href='#') EN
+          b-dropdown-item(href='#') ES
+          b-dropdown-item(href='#') RU
+          b-dropdown-item(href='#') FA
+        b-nav-item-dropdown(right='')
+          // Using button-content slot
+          template(slot='button-content')
+            em User
+          b-dropdown-item(href='#') Profile
+          b-dropdown-item(href='#') Signout
 </template>
 
 <style>
 </style>
+EOF
+
+cat > components/Sidebar.vue <<EOF
+<template lang="pug">
+  nav.col-sm-3.col-md-2.d-none.d-sm-block.bg-light.sidebar
+    ul.nav.nav-pills.flex-column.my-3
+      li.nav-item
+        a.nav-link.active(href='#')
+          | Overview
+          span.sr-only (current)
+      li.nav-item
+        a.nav-link(href='#') Reports
+      li.nav-item
+        a.nav-link(href='#') Analytics
+      li.nav-item
+        a.nav-link(href='#') Export
+    ul.nav.nav-pills.flex-column.my-3
+      li.nav-item
+        a.nav-link(href='#') Nav item
+      li.nav-item
+        a.nav-link(href='#') Nav item again
+      li.nav-item
+        a.nav-link(href='#') One more nav
+      li.nav-item
+        a.nav-link(href='#') Another nav item
+    ul.nav.nav-pills.flex-column.my-3
+      li.nav-item
+        a.nav-link(href='#') Nav item again
+      li.nav-item
+        a.nav-link(href='#') One more nav
+      li.nav-item
+        a.nav-link(href='#') Another nav item
+</template>
 EOF
 
 cd -
