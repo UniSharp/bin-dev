@@ -76,10 +76,16 @@ cat > layouts/default.vue <<EOF
   }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
   @import "assets/scss/functions";
   @import "assets/scss/variables";
   @import "node_modules/bootstrap/scss/bootstrap";
+
+  html, body {
+    height: 100%;
+    background-color: $gray-900;
+    color: $gray-100;
+  }
 
   .backend {
     display: flex;
@@ -87,6 +93,8 @@ cat > layouts/default.vue <<EOF
 
   .aside {
     width: 200px;
+    min-height: 100%;
+    background-color: $gray-900;
   }
 
   .main {
@@ -194,7 +202,7 @@ EOF
 
 cat > components/Navbar.vue <<EOF
 <template lang="pug">
-  b-navbar(toggleable='md', variant='light')
+  b-navbar(toggleable='md', type='dark')
     b-nav-toggle(target='nav_collapse')
     b-navbar-brand(href='#') NavBar
     b-collapse#nav_collapse(is-nav='')
@@ -225,8 +233,8 @@ EOF
 
 cat > components/Sidebar.vue <<EOF
 <template lang="pug">
-  nav.d-none.d-sm-block.bg-light.pt-3
-    h3 Backend
+  nav.d-none.d-sm-block.pt-3.bg-dark
+    h3.text-light Backend
     ul.nav.nav-pills.flex-column.my-3
       li.nav-item
         a.nav-link.active(href='#')
@@ -257,6 +265,13 @@ cat > components/Sidebar.vue <<EOF
 </template>
 
 <style lang="scss" scoped>
+  @import "assets/scss/functions";
+  @import "assets/scss/variables";
+  @import "node_modules/bootstrap/scss/bootstrap";
+
+  .nav-link {
+    color: $gray-100;
+  }
 </style>
 EOF
 
