@@ -57,9 +57,9 @@ rm -f components/Logo.vue
 
 cat > layouts/default.vue <<EOF
 <template lang="pug">
-  .container-fluid.clearfix
-    sidebar.float-left
-    div
+  .container-fluid.backend
+    sidebar.aside
+    div.main
       navbar
       nuxt
 </template>
@@ -76,10 +76,22 @@ cat > layouts/default.vue <<EOF
   }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
   @import "assets/scss/functions";
   @import "assets/scss/variables";
   @import "node_modules/bootstrap/scss/bootstrap";
+
+  .backend {
+    display: flex;
+  }
+
+  .aside {
+    width: 200px;
+  }
+
+  .main {
+    width: 100%;
+  }
 </style>
 EOF
 
@@ -213,7 +225,7 @@ EOF
 
 cat > components/Sidebar.vue <<EOF
 <template lang="pug">
-  nav.d-none.d-sm-block.bg-light.sidebar.pt-3
+  nav.d-none.d-sm-block.bg-light.pt-3
     h3 Backend
     ul.nav.nav-pills.flex-column.my-3
       li.nav-item
@@ -245,9 +257,6 @@ cat > components/Sidebar.vue <<EOF
 </template>
 
 <style lang="scss" scoped>
-  .sidebar {
-    width: 200px;
-  }
 </style>
 EOF
 
