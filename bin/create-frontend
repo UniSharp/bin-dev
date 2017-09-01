@@ -92,7 +92,7 @@ cat > layouts/default.vue <<EOF
   }
 
   .aside {
-    width: 200px;
+    width: 300px;
     min-height: 100%;
     background-color: $gray-900;
   }
@@ -234,7 +234,10 @@ EOF
 cat > components/Sidebar.vue <<EOF
 <template lang="pug">
   nav.d-none.d-sm-block.pt-3.bg-dark
-    h3.text-light Backend
+    header
+      .backend-logo
+        a.logo-img
+          img(src="~/assets/img/logo_img.png")
     ul.nav.nav-pills.flex-column.my-3
       li.nav-item
         a.nav-link.active(href='#')
@@ -270,7 +273,14 @@ cat > components/Sidebar.vue <<EOF
   @import "node_modules/bootstrap/scss/bootstrap";
 
   .nav-link {
-    color: $gray-100;
+    color: $gray-500;
+  }
+
+  header .backend-logo .logo-img > img {
+    width: 170px;
+    display: block;
+    height: 32px;
+    margin: 0 auto;
   }
 </style>
 EOF
